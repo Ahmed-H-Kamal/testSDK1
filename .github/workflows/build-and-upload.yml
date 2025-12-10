@@ -36,6 +36,7 @@ jobs:
 
     # 4. Upload to JFrog Artifactory
     - name: Upload JAR to JFrog
+      working-directory: testSDK1
       env:
         ARTIFACTORY_URL: ${{ secrets.ARTIFACTORY_URL }}
         ARTIFACTORY_REPO: ${{ secrets.ARTIFACTORY_REPO }}
