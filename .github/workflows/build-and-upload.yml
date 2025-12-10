@@ -30,7 +30,9 @@ jobs:
 
     # 3. Build the JAR using Gradle
     - name: Build JAR
+      working-directory: testSDK1
       run: ./gradlew clean build
+
 
     # 4. Upload to JFrog Artifactory
     - name: Upload JAR to JFrog
