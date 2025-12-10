@@ -1,0 +1,26 @@
+plugins {
+    id 'java'
+}
+
+group = 'com.example'
+version = '1.0.0'
+
+sourceCompatibility = '17'
+targetCompatibility = '17'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // Add dependencies here if needed
+}
+
+jar {
+    manifest {
+        attributes(
+                'Implementation-Title': 'HelloWorldSDK',
+                'Implementation-Version': version
+        )
+    }
+}
