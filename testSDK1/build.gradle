@@ -2,18 +2,18 @@ plugins {
     id 'java'
 }
 
-group = 'com.example'
+group = 'org.example'
 version = '1.0.0'
 
-sourceCompatibility = '17'
-targetCompatibility = '17'
+sourceCompatibility = '11'
+targetCompatibility = '11'
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    // Add dependencies here if needed
+    // Add dependencies if needed
 }
 
 jar {
