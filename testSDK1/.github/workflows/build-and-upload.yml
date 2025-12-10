@@ -1,0 +1,43 @@
+name: Build and Upload SDK
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-and-upload:
+    runs-on: ubuntu-latest
+
+    steps:
+    # 1. Checkout code
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    # 2. Set up Java
+    - name: Set up Java 17
+      uses: actions/setup-java@v3
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+
+    # 3. Build the JAR using Gradle
+    - name: Build JAR
+      run: ./gradlew clean build
+
+    # 4. Upload to JFrog Artifactory
+    - name: Upload JAR to JFrog
+      env:
+        ARTIFACTORY_URL: ${{ secrets.ARTIFACTORY_URL }}
+        ARTIFACTORY_REPO: ${{ secrets.ARTIFACTORY_REPO }}
+        ARTIFACTORY_USERNAME: ${{ secrets.ARTIFACTORY_USERNAME }}
+        ARTIFACTORY_PASSWORD: ${{ secrets.ARTIFACTORY_PASSWORD }}
+      run: |
+        JAR_FILE=$(find build/libs -name "*.jar" | head -n 1)
+        echo "Uploading $JAR_FILE to Artifactory..."
+        curl -u $ARTIFACTORY_USERNAME:$ARTIFACTORY_PASSWORD \
+             -T $JAR_FILE \
+             $ARTIFACTORY_URL/$ARTIFACTORY_REPO/$(basename $JAR_FILE)
