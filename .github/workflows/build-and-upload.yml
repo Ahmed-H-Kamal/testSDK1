@@ -50,8 +50,8 @@ jobs:
              $ARTIFACTORY_URL/$ARTIFACTORY_REPO/$(basename $JAR_FILE)
 
     - name: Trigger Repo 2 workflow
-        uses: peter-evans/repository-dispatch@v2
-        with:
+      uses: peter-evans/repository-dispatch@v2
+      with:
           token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
           repository: Ahmed-H-Kamal/testSDK2
           event-type: testSDK1-completed
