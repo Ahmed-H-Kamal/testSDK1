@@ -36,18 +36,18 @@ jobs:
     - name: Calculate Path
       id: calculate_path
       run: |
-      # Define group info
-      GROUP_ID="sdk-gradle-dev-local/sdk/javaSDK/"
-          
-      # Compute date in dd-mm-yyyy_hh-mm-ss format
-      DATE=$(date +"%d-%m-%Y_%H-%M-%S")
-          
-      # Compute reusable base upload path (directory only)
-      JFROG_BASE_PATH="/${GROUP_ID//.//}/${VERSION}/$DATE/"
+        # Define group info
+        GROUP_ID="sdk/javaSDK"
+        
+        # Compute date in dd-mm-yyyy_hh-mm-ss format
+        DATE=$(date +"%d-%m-%Y_%H-%M-%S")
 
-      echo "jfrog_path=$JFROG_BASE_PATH" >> $GITHUB_OUTPUT
+        # Compute reusable base upload path (directory only)
+        JFROG_BASE_PATH="${GROUP_ID}/${VERSION}/${DATE}"
 
-    # 4. Upload to JFrog Artifactory
+        echo "jfrog_path=$JFROG_BASE_PATH" >> $GITHUB_OUTPUT
+
+
     - name: Upload JAR to JFrog
       working-directory: testSDK1
       env:
@@ -55,12 +55,14 @@ jobs:
         ARTIFACTORY_REPO: ${{ secrets.ARTIFACTORY_REPO }}
         ARTIFACTORY_USERNAME: ${{ secrets.ARTIFACTORY_USERNAME }}
         ARTIFACTORY_PASSWORD: ${{ secrets.ARTIFACTORY_PASSWORD }}
-      run: |
-        JAR_FILE=$(find build/libs -name "*.jar" | head -n 1)
-        echo "Uploading $JAR_FILE to Artifactory..."
-        curl -u $ARTIFACTORY_USERNAME:$ARTIFACTORY_PASSWORD \
-             -T $JAR_FILE \
-             $ARTIFACTORY_URL/$ARTIFACTORY_REPO/$JFROG_BASE_PATH/$(basename $JAR_FILE)
+        run: |
+          JAR_FILE=$(find build/libs -name "*.jar" | head -n 1)
+
+          echo "Uploading $JAR_FILE to Artifactory..."
+
+          curl -u $ARTIFACTORY_USERNAME:$ARTIFACTORY_PASSWORD \
+          -T $JAR_FILE \
+          "$ARTIFACTORY_URL/$ARTIFACTORY_REPO/${{ steps.calculate_path.outputs.jfrog_path }}/$(basename $JAR_FILE)"
 
     - name: Trigger Repo 2 workflow
       uses: peter-evans/repository-dispatch@v2
