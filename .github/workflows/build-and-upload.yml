@@ -42,6 +42,8 @@ jobs:
         # Compute date in dd-mm-yyyy_hh-mm-ss format
         DATE=$(date +"%d-%m-%Y_%H-%M-%S")
 
+        VERSION=1.0.0
+        
         # Compute reusable base upload path (directory only)
         JFROG_BASE_PATH="${GROUP_ID}/${VERSION}/${DATE}"
 
