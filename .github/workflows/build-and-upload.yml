@@ -42,14 +42,13 @@ jobs:
         # Compute date in dd-mm-yyyy_hh-mm-ss format
         DATE=$(date +"%d-%m-%Y_%H-%M-%S")
 
-        VERSION=1.0.0
-        
         # Compute reusable base upload path (directory only)
         JFROG_BASE_PATH="${GROUP_ID}/${VERSION}/${DATE}"
 
-        echo "jfrog_path=$JFROG_BASE_PATH" >> $GITHUB_OUTPUT
+      echo "jfrog_path=$JFROG_BASE_PATH" >> $GITHUB_OUTPUT
 
 
+    # 4. Upload to JFrog Artifactory
     - name: Upload JAR to JFrog
       working-directory: testSDK1
       env:
@@ -57,20 +56,34 @@ jobs:
         ARTIFACTORY_REPO: ${{ secrets.ARTIFACTORY_REPO }}
         ARTIFACTORY_USERNAME: ${{ secrets.ARTIFACTORY_USERNAME }}
         ARTIFACTORY_PASSWORD: ${{ secrets.ARTIFACTORY_PASSWORD }}
-
       run: |
-          JAR_FILE=$(find build/libs -name "*.jar" | head -n 1)
+        JAR_FILE=$(find build/libs -name "*.jar" | head -n 1)
+        echo "Uploading $JAR_FILE to Artifactory..."
+        curl -u $ARTIFACTORY_USERNAME:$ARTIFACTORY_PASSWORD \
+             -T $JAR_FILE \
+             $ARTIFACTORY_URL/$ARTIFACTORY_REPO/$JFROG_BASE_PATH/$(basename $JAR_FILE)
 
-          echo "Uploading $JAR_FILE to Artifactory..."
-
-          curl -u $ARTIFACTORY_USERNAME:$ARTIFACTORY_PASSWORD \
-          -T $JAR_FILE \
-          "$ARTIFACTORY_URL/$ARTIFACTORY_REPO/${{ steps.calculate_path.outputs.jfrog_path }}/$(basename $JAR_FILE)"
-
-    - name: Trigger Repo 2 workflow
-      uses: peter-evans/repository-dispatch@v2
+      # After successful upload trigger Android SDK Workflow
+    - name: Trigger Repo B workflow using Repository Dispatch
+      uses: actions/github-script@v7
       with:
-          token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-          repository: Ahmed-H-Kamal/testSDK2
-          event-type: testSDK1-completed
-          client-payload: '{"ref": "${{ github.ref }}"}'
+          github-token: ${{ secrets.REPO_B_TOKEN }}
+          script: |
+            await github.request('POST /repos/{owner}/{repo}/dispatches', {
+              owner: 'VFG-VBPS-PPE',
+              repo: 'step-sdk-external-java-v2xsdkandroidv2',
+              event_type: 'step-sdk-external-java-v2xsdk4javav2-completed',
+              client_payload: {
+                version: '1.0.0',
+                triggered_by: 'java-sdk'
+              }
+            });
+
+
+    # - name: Trigger Repo 2 workflow
+    #   uses: peter-evans/repository-dispatch@v2
+    #   with:
+    #       token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+    #       repository: Ahmed-H-Kamal/testSDK2
+    #       event-type: testSDK1-completed
+    #       client-payload: '{"ref": "${{ github.ref }}"}'
