@@ -67,7 +67,7 @@ jobs:
     - name: Trigger Repo B workflow using Repository Dispatch
       uses: actions/github-script@v7
       with:
-          github-token: ${{ secrets.REPO_B_TOKEN }}
+          github-token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
           script: |
             await github.request('POST /repos/{owner}/{repo}/dispatches', {
               owner: 'Ahmed-H-Kamal',
