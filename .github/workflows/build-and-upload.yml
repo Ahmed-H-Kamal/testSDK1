@@ -45,7 +45,7 @@ jobs:
         # Compute reusable base upload path (directory only)
         JFROG_BASE_PATH="${GROUP_ID}/${VERSION}/${DATE}"
 
-      echo "jfrog_path=$JFROG_BASE_PATH" >> $GITHUB_OUTPUT
+        echo "jfrog_path=$JFROG_BASE_PATH" >> $GITHUB_OUTPUT
 
 
     # 4. Upload to JFrog Artifactory
@@ -70,12 +70,12 @@ jobs:
           github-token: ${{ secrets.REPO_B_TOKEN }}
           script: |
             await github.request('POST /repos/{owner}/{repo}/dispatches', {
-              owner: 'VFG-VBPS-PPE',
-              repo: 'step-sdk-external-java-v2xsdkandroidv2',
+              owner: 'Ahmed-H-Kamal',
+              repo: 'testSDK2',
               event_type: 'step-sdk-external-java-v2xsdk4javav2-completed',
               client_payload: {
-                version: '1.0.0',
-                triggered_by: 'java-sdk'
+                source_repo: process.env.GITHUB_REPOSITORY,
+                source_run: process.env.GITHUB_RUN_ID
               }
             });
 
