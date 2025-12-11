@@ -55,7 +55,8 @@ jobs:
         ARTIFACTORY_REPO: ${{ secrets.ARTIFACTORY_REPO }}
         ARTIFACTORY_USERNAME: ${{ secrets.ARTIFACTORY_USERNAME }}
         ARTIFACTORY_PASSWORD: ${{ secrets.ARTIFACTORY_PASSWORD }}
-        run: |
+
+      run: |
           JAR_FILE=$(find build/libs -name "*.jar" | head -n 1)
 
           echo "Uploading $JAR_FILE to Artifactory..."
